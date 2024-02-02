@@ -106,8 +106,8 @@ def to_front_matter(event: Event, existing_frontmatter: Optional[dict] = None):
     return '\n'.join(lines)
 
 def main():
-    path = sys.argv[1]
-    print(path)
+    dir = sys.argv[1]
+    path = pathlib.Path(dir)
     store = Store(path)
     for line in sys.stdin:
         event = process_line(line)
