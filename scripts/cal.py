@@ -106,9 +106,12 @@ def to_front_matter(event: Event, existing_frontmatter: Optional[dict] = None):
     return '\n'.join(lines)
 
 def main():
+    path = sys.argv[1]
+    print(path)
+    store = Store(path)
     for line in sys.stdin:
         event = process_line(line)
-        print(to_front_matter(event))
+        store.upsert_event(event)
 
 
 def process_line(line: str) -> Event:
