@@ -1,17 +1,16 @@
-from scripts.cal import Event, to_front_matter
+from scripts.cal import Event, Store, to_front_matter
+import filecmp
 
-def test_to_front_matter_with_times():
-    event = Event(title="Test Event", date="2022-01-01", start_time="10:00", end_time="12:00")
-    expected_output = "---\ntitle: Test Event\ndate: 2022-01-01\nstartTme: 10:00\nendTime: 12:00\nallDay: false\n---"
-    assert to_front_matter(event) == expected_output
-
-def test_to_front_matter_without_times():
-    event = Event(title="Test Event", date="2022-01-01")
-    expected_output = "---\ntitle: Test Event\ndate: 2022-01-01\nallDay: true\n---"
-    assert to_front_matter(event) == expected_output
-
-def test_file_creation(tmp_path):
+def test_file_creation(datadir):
     # Create a file inside the temporary directory
-    file_path = tmp_path / "test_file.txt"
-    with open(file_path, "w") as f:
-        f.write("Hello, world!")
+
+    store = Store(datadir / 'actual')
+    events = [
+       Event(title="Test Event", date="2022-01-01", start_time="11:00", end_time="12:00"),
+       Event(title="All Day Test Event", date="2022-01-02"),
+       Event(title="Existing Test Event", date="2022-01-03", start_time="12:00", end_time="13:00")
+    ] 
+    for event in events:
+        store.upsert_event(event)
+    dircmp = filecmp.dircmp(datadir / 'actual', datadir / 'expects')
+    assert len(dircmp.diff_files) == 0, "did not produce the expected set of files"
